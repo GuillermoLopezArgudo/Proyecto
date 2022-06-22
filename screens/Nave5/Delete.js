@@ -9,8 +9,8 @@ import {
   ScrollView,
   Image
 } from "react-native";
-import { doc } from "firebase/firestore";
-import { db } from "../../utils/firebase";
+import { deleteField, doc, updateDoc } from "firebase/firestore";
+import { db, auth } from "../../utils/firebase";
 
 const Delete = () => {
   const [state, setState] = useState({
@@ -22,9 +22,13 @@ const Delete = () => {
   };
 
   const Delete = () => {
-    const myDoc = doc(db, "Nave5", state.maquina);
+    const myDoc = doc(db, auth.currentUser?.email,"Nave5");
 
-    deleteDoc(myDoc)
+    const maquina = state.maquina
+
+    updateDoc(myDoc, {
+      [maquina] : deleteField()
+    })
       .then(() => {
         alert("Maquina Eliminada");
       })

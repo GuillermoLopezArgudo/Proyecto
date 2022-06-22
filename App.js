@@ -5,6 +5,7 @@ import TabNavigator from "./TabNavigator";
 import { createStackNavigator } from '@react-navigation/stack';
 import Account from "./screens/account/Account";
 
+
 const Stack = createStackNavigator();
 
 export default class App extends React.Component {

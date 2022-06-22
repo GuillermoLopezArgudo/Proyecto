@@ -1,5 +1,5 @@
-import { setDoc } from "firebase/firestore";
-import React, { useState, useEffect } from "react";
+import { setDoc, doc,} from "firebase/firestore";
+import React, { useState} from "react";
 import {
   StyleSheet,
   View,
@@ -9,8 +9,7 @@ import {
   ScrollView,
   Image,
 } from "react-native";
-import { doc } from "firebase/firestore";
-import { db } from "../../utils/firebase";
+import { db, auth } from "../../utils/firebase";
 
 const Create = () => {
   const [kgRestante, setKgRestante] = useState(0);
@@ -27,30 +26,36 @@ const Create = () => {
     setState({ ...state, [name]: value });
   };
 
-  const Crear = () => {
-    const myDoc = doc(db, "Nave3", state.maquina);
+  const Crear = async () => {
 
+    const myDoc = doc(db, auth.currentUser?.email,"Nave3");
+
+  
     Tipo()
 
     const kg = (state.kgtotal * state.porcentaje) / 100;
     const total = state.kgtotal - kg;
     setKgRestante(state.kgtotal - kg);
-
+    
+    const maquina = state.maquina
     const docData = {
+      [maquina]: {
       material: state.material,
       tipo: state.tipo,
       kgtotal: state.kgtotal,
       porcentaje: state.porcentaje,
       kgRestante: total,
+      }
     };
 
-    setDoc(myDoc, docData)
+    await setDoc(myDoc, docData, {merge:true})
       .then(() => {
         alert("Maquina Añadida");
       })
       .catch((error) => {
         alert(error.message);
       });
+  
   };
 
   const Tipo = () => {

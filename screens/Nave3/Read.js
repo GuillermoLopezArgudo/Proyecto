@@ -1,5 +1,5 @@
-import { deleteDoc, getDoc, setDoc } from "firebase/firestore";
-import React, { useState, useEffect } from "react";
+import { getDoc } from "firebase/firestore";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -10,7 +10,7 @@ import {
   Image,
 } from "react-native";
 import { doc } from "firebase/firestore";
-import { db } from "../../utils/firebase";
+import { db, auth } from "../../utils/firebase";
 
 const Read = () => {
   const [userDoc, setUserDoc] = useState(null);
@@ -24,12 +24,12 @@ const Read = () => {
   };
 
   const Read = () => {
-    const myDoc = doc(db, "Nave3", state.maquina);
+    const myDoc = doc(db, auth.currentUser?.email, "Nave3");
 
     getDoc(myDoc)
       .then((snapshot) => {
         if (snapshot.exists) {
-          setUserDoc(snapshot.data());
+          setUserDoc(snapshot.get(state.maquina));
         } else {
           alert("No Doc Found");
         }
@@ -47,7 +47,7 @@ const Read = () => {
         }}
         style={styles.image}
       />
-      <View style={{margin:'auto'}}>
+      <View style={{ margin: "auto" }}>
         <Text style={styles.text}>Maquina:</Text>
         <TextInput
           style={styles.input}
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     height: 50,
     margin: "auto",
     marginLeft: 80,
-    marginTop: 20
+    marginTop: 20,
   },
   input: {
     height: 40,

@@ -1,4 +1,4 @@
-import { getDoc, setDoc } from "firebase/firestore";
+import { getDoc, setDoc, doc } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
@@ -9,13 +9,9 @@ import {
   ScrollView,
   Image,
 } from "react-native";
-import { doc } from "firebase/firestore";
-import { db } from "../../utils/firebase";
+import { db, auth } from "../../utils/firebase";
 import { Picker } from "@react-native-picker/picker";
 const Update = () => {
-  /*useEffect(()=>{
-Read
-},[])*/
 
   const [userDoc, setUserDoc] = useState(null);
 
@@ -31,9 +27,11 @@ Read
   };
 
   const Update = (value, merge) => {
-    const myDoc = doc(db, "Nave3", state.maquina);
+    const myDoc = doc(db, auth.currentUser?.email,"Nave3");
 
-    setDoc(myDoc, value, { merge: merge })
+    const maquina = state.maquina
+    const data = {[maquina] : value}
+    setDoc(myDoc, data, { merge: merge })
       .then(() => {
         alert("Actualizacion Realizada!");
         setText("");
@@ -44,13 +42,12 @@ Read
   };
 
   const Read = () => {
-    const myDoc = doc(db, "Nave3", state.maquina);
+    const myDoc = doc(db, auth.currentUser?.email,"Nave3");
 
     getDoc(myDoc)
       .then((snapshot) => {
         if (snapshot.exists) {
-          setUserDoc(snapshot.data());
-          Selecctor();
+          setUserDoc(snapshot.get(state.maquina));
           Selecctor();
         } else {
           alert("No encontrado");
@@ -62,6 +59,7 @@ Read
   };
 
   async function Selecctor() {
+    Read;
     if (state.eleccion === "Material") {
       Update(
         {
@@ -77,7 +75,7 @@ Read
         true
       );
     } else if (state.eleccion == "KgTotal") {
-      Read;
+
       const KG = (text * userDoc.porcentaje) / 100;
       const kgRestante = text - KG;
 

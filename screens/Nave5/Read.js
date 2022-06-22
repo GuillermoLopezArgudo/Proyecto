@@ -10,7 +10,7 @@ import {
   Image,
 } from "react-native";
 import { doc } from "firebase/firestore";
-import { db } from "../../utils/firebase";
+import { db, auth } from "../../utils/firebase";
 
 const Read = () => {
   const [userDoc, setUserDoc] = useState(null);
@@ -24,12 +24,12 @@ const Read = () => {
   };
 
   const Read = () => {
-    const myDoc = doc(db, "Nave5", state.maquina);
+    const myDoc = doc(db, auth.currentUser?.email, "Nave5");
 
     getDoc(myDoc)
       .then((snapshot) => {
         if (snapshot.exists) {
-          setUserDoc(snapshot.data());
+          setUserDoc(snapshot.get(state.maquina));
         } else {
           alert("No Doc Found");
         }

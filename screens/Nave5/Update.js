@@ -1,4 +1,4 @@
-import { getDoc, setDoc } from "firebase/firestore";
+import { getDoc, setDoc, doc } from "firebase/firestore";
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
@@ -9,12 +9,9 @@ import {
   ScrollView,
   Image,
 } from "react-native";
-import { doc } from "firebase/firestore";
-import { db } from "../../utils/firebase";
+import { db, auth } from "../../utils/firebase";
 import { Picker } from "@react-native-picker/picker";
-
-const Update = (props) => {
-  useEffect(() => {}, []);
+const Update = () => {
 
   const [userDoc, setUserDoc] = useState(null);
 
@@ -30,9 +27,11 @@ const Update = (props) => {
   };
 
   const Update = (value, merge) => {
-    const myDoc = doc(db, "Nave5", state.maquina);
+    const myDoc = doc(db, auth.currentUser?.email,"Nave5");
 
-    setDoc(myDoc, value, { merge: merge })
+    const maquina = state.maquina
+    const data = {[maquina] : value}
+    setDoc(myDoc, data, { merge: merge })
       .then(() => {
         alert("Actualizacion Realizada!");
         setText("");
@@ -43,12 +42,12 @@ const Update = (props) => {
   };
 
   const Read = () => {
-    const myDoc = doc(db, "Nave5", state.maquina);
+    const myDoc = doc(db, auth.currentUser?.email,"Nave5");
 
     getDoc(myDoc)
       .then((snapshot) => {
         if (snapshot.exists) {
-          setUserDoc(snapshot.data());
+          setUserDoc(snapshot.get(state.maquina));
           Selecctor();
         } else {
           alert("No encontrado");
@@ -60,6 +59,7 @@ const Update = (props) => {
   };
 
   async function Selecctor() {
+    Read;
     if (state.eleccion === "Material") {
       Update(
         {
@@ -75,7 +75,7 @@ const Update = (props) => {
         true
       );
     } else if (state.eleccion == "KgTotal") {
-      Read;
+
       const KG = (text * userDoc.porcentaje) / 100;
       const kgRestante = text - KG;
 
@@ -98,7 +98,6 @@ const Update = (props) => {
         true
       );
     }
-    props.navigation.navigate("Nave 5");
   }
 
   return (
@@ -136,7 +135,7 @@ const Update = (props) => {
       ></TextInput>
       <View style={styles.button}>
         <Button
-          title="Actualizar Datos"
+          title="Actualizar Dato"
           color="#00008B"
           onPress={Read}
           disabled={text == "" || state.maquina == ""}
